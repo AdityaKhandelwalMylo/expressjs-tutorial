@@ -3,4 +3,4 @@
 
 //Used to build web full stack apps
 
-// Middlwares - have access to req and response object, are used to perform some work, that is required in 
+// Middlwares - have access to req and response object, are used to perform some work
