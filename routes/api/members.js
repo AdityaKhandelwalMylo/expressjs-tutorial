@@ -29,11 +29,12 @@ router.get("/:id", async (req, res) => {
   return res.json(member);
 });
 
+//Add a member
 router.post("/", async (req, res) => {
   const { name, email } = req.body;
 
   if (!name || !email)
-    return res.status(400).json({ msg: "Name or Email is missing!!!" });
+    return res.status(400).json({ msg: "Please include a name and email" });
 
   if (!validateEmail(email))
     return res.status(400).json({ msg: "Enter a valid email ID" });
@@ -47,6 +48,47 @@ router.post("/", async (req, res) => {
 
   members.push(newMember);
   return res.json(members);
+});
+
+//Update a member
+router.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  if (!id) return res.status(400).json({ msg: "Please send an id" });
+
+  if (Number.isNaN(parseInt(id)))
+    return res.status(400).json({ msg: "Send a valid id" });
+
+  const { name, email } = req.body;
+
+  if (email && !validateEmail(email))
+    return res.status(400).json({ msg: "Enter a valid email ID" });
+
+  const memberFound = members.some((member) => member.id === parseInt(id));
+
+  if (!memberFound)
+    return res.status(400).json({ msg: `No member with id ${id} found` });
+
+  members.forEach((member) => {
+    if (member.id === parseInt(id)) {
+      member.name = name ? name : member.name;
+      member.email = email ? email : member.email;
+      return res.json({ msg: "Member updated", member });
+    }
+  });
+});
+
+//Delete a member
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  if (!id) return res.status(400).json({ msg: "Please send an id" });
+
+  if (Number.isNaN(parseInt(id)))
+    return res.status(400).json({ msg: "Send a valid id" });
+
+  const index = members.findIndex((member) => member.id === parseInt(id));
+  if (index > -1) members.splice(index, 1);
+
+  return res.json({ msg: "Member deleted", members });
 });
 
 module.exports = router;
