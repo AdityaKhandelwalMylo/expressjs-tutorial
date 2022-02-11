@@ -1,6 +1,11 @@
 const express = require("express");
 const uuid = require("uuid");
 const members = require("../../Members");
+const {
+  getSingleMember,
+  isMemberFound,
+  getMemberIndex,
+} = require("../../utils/helperFunctions");
 const validateEmail = require("../../utils/validateEmail");
 
 const router = express.Router();
@@ -21,7 +26,7 @@ router.get("/:id", async (req, res) => {
   if (Number.isNaN(parseInt(id)))
     return res.status(400).json({ msg: "Send a valid id" });
 
-  const member = members.filter((member) => member.id === parseInt(id));
+  const member = getSingleMember(parseInt(id));
 
   if (!member.length)
     return res.status(400).json({ msg: `No member with id ${id} found` });
@@ -63,7 +68,7 @@ router.put("/:id", async (req, res) => {
   if (email && !validateEmail(email))
     return res.status(400).json({ msg: "Enter a valid email ID" });
 
-  const memberFound = members.some((member) => member.id === parseInt(id));
+  const memberFound = isMemberFound(parseInt(id));
 
   if (!memberFound)
     return res.status(400).json({ msg: `No member with id ${id} found` });
@@ -85,7 +90,7 @@ router.delete("/:id", async (req, res) => {
   if (Number.isNaN(parseInt(id)))
     return res.status(400).json({ msg: "Send a valid id" });
 
-  const index = members.findIndex((member) => member.id === parseInt(id));
+  const index = getMemberIndex(parseInt(id));
   if (index > -1) members.splice(index, 1);
 
   return res.json({ msg: "Member deleted", members });
